@@ -188,22 +188,6 @@ Abre la ruta /chat en el navegador o usa la interfaz React para enviar mensajes 
 
 Los mensajes enviados desde el chat se almacenan en PostgreSQL y pueden consultarse desde /messages.
 
-## 📸 Capturas de referencia
-
-Aqui se han dejado espacio preparado para añadir imagenes reales del proyecto. Puedes reemplazar los archivos placeholder por capturas de pantalla reales cuando las tengas.
-
-### Login y autenticación
-![Login y autenticación](docs/screenshots/auth-login.svg)
-
-### Catálogo de productos
-![Catálogo de productos](docs/screenshots/products-list.svg)
-
-### CRUD de productos (modo admin)
-![CRUD de productos](docs/screenshots/admin-crud.svg)
-
-### Chat en tiempo real
-![Chat en tiempo real](docs/screenshots/realtime-chat.svg)
-
 ## 🧰 Archivos de ejemplo y pruebas
 
 - docs/api-examples.sh: ejemplos de uso con cURL
