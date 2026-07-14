@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#f5f7fb"/>
+  <rect x="80" y="80" width="1040" height="540" rx="24" fill="#ffffff" stroke="#dfe6f0" stroke-width="2"/>
+  <text x="120" y="150" fill="#1f2937" font-family="Arial" font-size="32">Gestión de productos</text>
+  <rect x="120" y="190" width="400" height="270" rx="16" fill="#f9fbff" stroke="#dce7f7"/>
+  <text x="150" y="235" fill="#1f2937" font-family="Arial" font-size="22">Crear producto</text>
+  <rect x="150" y="255" width="320" height="42" rx="8" fill="#ffffff" stroke="#cfd8e3"/>
+  <text x="168" y="283" fill="#9aa4b2" font-family="Arial" font-size="16">Nombre</text>
+  <rect x="150" y="315" width="320" height="42" rx="8" fill="#ffffff" stroke="#cfd8e3"/>
+  <text x="168" y="343" fill="#9aa4b2" font-family="Arial" font-size="16">Precio</text>
+  <rect x="150" y="375" width="190" height="42" rx="8" fill="#2d6cdf"/>
+  <text x="198" y="403" fill="#ffffff" font-family="Arial" font-size="18">Guardar</text>
+  <rect x="560" y="190" width="480" height="270" rx="16" fill="#f8fff9" stroke="#dcebdc"/>
+  <text x="590" y="235" fill="#1f2937" font-family="Arial" font-size="22">Productos existentes</text>
+  <rect x="590" y="260" width="410" height="48" rx="10" fill="#ffffff" stroke="#cfe5d1"/>
+  <text x="610" y="292" fill="#1f2937" font-family="Arial" font-size="18">Producto A · Editar · Eliminar</text>
+  <rect x="590" y="330" width="410" height="48" rx="10" fill="#ffffff" stroke="#cfe5d1"/>
+  <text x="610" y="362" fill="#1f2937" font-family="Arial" font-size="18">Producto B · Editar · Eliminar</text>
+</svg>

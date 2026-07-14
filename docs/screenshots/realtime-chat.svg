@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#f5f7fb"/>
+  <rect x="80" y="80" width="1040" height="540" rx="24" fill="#ffffff" stroke="#dfe6f0" stroke-width="2"/>
+  <text x="120" y="150" fill="#1f2937" font-family="Arial" font-size="32">Chat en tiempo real</text>
+  <rect x="120" y="190" width="600" height="360" rx="16" fill="#f9fbff" stroke="#dce7f7"/>
+  <rect x="150" y="220" width="320" height="70" rx="12" fill="#dceeff"/>
+  <text x="170" y="260" fill="#1f2937" font-family="Arial" font-size="18">Hola, ¿cómo va el pedido?</text>
+  <rect x="360" y="310" width="320" height="70" rx="12" fill="#2d6cdf"/>
+  <text x="380" y="350" fill="#ffffff" font-family="Arial" font-size="18">Todo en orden, gracias.</text>
+  <rect x="150" y="400" width="280" height="70" rx="12" fill="#dceeff"/>
+  <text x="170" y="440" fill="#1f2937" font-family="Arial" font-size="18">Perfecto, lo reviso.</text>
+  <rect x="120" y="575" width="600" height="56" rx="10" fill="#ffffff" stroke="#cfd8e3"/>
+  <text x="145" y="610" fill="#9aa4b2" font-family="Arial" font-size="18">Escribe un mensaje...</text>
+  <rect x="760" y="190" width="240" height="180" rx="16" fill="#f8fff9" stroke="#dcebdc"/>
+  <text x="790" y="235" fill="#1f2937" font-family="Arial" font-size="22">Usuarios activos</text>
+  <text x="790" y="285" fill="#64748b" font-family="Arial" font-size="18">Ana</text>
+  <text x="790" y="320" fill="#64748b" font-family="Arial" font-size="18">Luis</text>
+</svg>

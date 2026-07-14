@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#f5f7fb"/>
+  <rect x="80" y="80" width="1040" height="540" rx="24" fill="#ffffff" stroke="#dfe6f0" stroke-width="2"/>
+  <rect x="120" y="140" width="220" height="40" rx="8" fill="#2d6cdf"/>
+  <text x="150" y="167" fill="#ffffff" font-family="Arial" font-size="24">EcoHome</text>
+  <rect x="360" y="140" width="260" height="40" rx="8" fill="#eaf2ff"/>
+  <text x="390" y="167" fill="#2d6cdf" font-family="Arial" font-size="20">Inicio de sesión</text>
+  <rect x="350" y="240" width="500" height="290" rx="20" fill="#f9fbff" stroke="#dce7f7"/>
+  <text x="390" y="290" fill="#1f2937" font-family="Arial" font-size="24">Iniciar sesión</text>
+  <rect x="390" y="325" width="360" height="48" rx="10" fill="#ffffff" stroke="#cfd8e3"/>
+  <text x="410" y="356" fill="#9aa4b2" font-family="Arial" font-size="18">Correo electrónico</text>
+  <rect x="390" y="390" width="360" height="48" rx="10" fill="#ffffff" stroke="#cfd8e3"/>
+  <text x="410" y="421" fill="#9aa4b2" font-family="Arial" font-size="18">Contraseña</text>
+  <rect x="390" y="470" width="220" height="48" rx="10" fill="#2d6cdf"/>
+  <text x="455" y="501" fill="#ffffff" font-family="Arial" font-size="20">Entrar</text>
+</svg>

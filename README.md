@@ -1,142 +1,224 @@
-# EcoHome Store Backend
+# EcoHome
 
-Backend REST para EcoHome Store orientado a la actividad 3 de CRUD de productos y consumo multiplataforma.
+EcoHome es una aplicación de ejemplo orientada a la gestión de productos y a la comunicación en tiempo real. El proyecto combina un backend en Node.js/Express con PostgreSQL y un frontend en React/Vite para ofrecer una experiencia completa de autenticación, CRUD de productos y chat interno.
 
-## Qué incluye
-- PostgreSQL local
-- Autenticación con JWT
-- Roles admin/cliente
-- CRUD completo de productos con protección por permisos
-- Respuestas HTTP estándar para consumo web, móvil o desktop
+## 🚀 Funcionalidades principales
 
-## Requisitos
-- Node.js 18+
-- PostgreSQL instalado y ejecutándose localmente
-- npm
+- Registro e inicio de sesión de usuarios con JWT.
+- Autorización por roles: usuarios administradores pueden gestionar productos y clientes pueden consultar el catálogo.
+- CRUD completo de productos con validaciones básicas.
+- Chat en tiempo real mediante Socket.IO.
+- Persistencia de mensajes en PostgreSQL.
+- API REST preparada para consumo desde web, móvil o escritorio.
 
-## Actividad 1 - Backend en tiempo real con Socket.IO
-Se integró Socket.IO al servidor Express para habilitar comunicación en tiempo real entre clientes conectados.
+## 🛠️ Tecnologías utilizadas
 
-### Qué incluye
-- Inicialización del servidor HTTP + WebSocket con Socket.IO
-- Logs claros en conexión y desconexión
-- Evento `new-message` para recibir mensajes desde clientes
-- Broadcast con `io.emit('message-received', ...)` para reenviar a todos los clientes conectados
+- Backend: Node.js, Express, JWT, bcryptjs, Socket.IO
+- Base de datos: PostgreSQL
+- Frontend: React, Vite, Socket.IO Client
+- Herramientas: npm, nodemon
 
-### Cómo probarlo
-1. Instala dependencias:
-   ```bash
-   npm install
-   ```
-2. Inicia el servidor:
-   ```bash
-   npm start
-   ```
-3. Abre dos ventanas del navegador en:
-   ```text
-   http://localhost:3000/chat
-   ```
-4. Envía un mensaje desde una ventana y observarás que aparece en la otra en tiempo real.
+## 📁 Estructura del proyecto
 
-## Actividad 2 - Seguridad y persistencia con JWT + base de datos
-Se añadió autenticación real para el chat mediante JWT en la conexión WebSocket y persistencia de mensajes en PostgreSQL.
-
-### Qué incluye
-- Validación del JWT en el handshake de Socket.IO
-- Asociación del socket con el usuario autenticado
-- Tabla `messages` en la base de datos
-- Guardado automático de cada mensaje antes de reenviarlo
-- Endpoint `GET /messages` para verificar los mensajes almacenados
-
-### Cómo probarlo
-1. Inicia el servidor:
-   ```bash
-   npm start
-   ```
-2. Abre la página:
-   ```text
-   http://localhost:3000/chat
-   ```
-3. Inicia sesión con un usuario registrado o crea uno mediante `POST /auth/signup`.
-4. Envía mensajes desde el chat; se guardarán automáticamente en la base de datos.
-5. Abre `http://localhost:3000/messages` para ver los mensajes almacenados.
-
-## Configuración local
-1. Instala y levanta PostgreSQL en tu equipo.
-2. Crea la base de datos que usarás, por ejemplo:
-   ```bash
-   createdb ecohome_db
-   ```
-   Si prefieres, puedes crearla desde pgAdmin o desde la consola de PostgreSQL.
-3. Copia el archivo .env.example a .env y ajusta los valores si es necesario:
-   ```bash
-   copy .env.example .env
-   ```
-   Ejemplo de configuración:
-   ```env
-   PORT=3000
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=ecohome_db
-   DB_USER=postgres
-   DB_PASS=postgres
-   JWT_SECRET=change-this-secret
-   ```
-4. Instala las dependencias:
-   ```bash
-   npm install
-   ```
-5. Crea las tablas y la base de datos si aún no existen:
-   ```bash
-   npm run db:init
-   ```
-6. Inicia el servidor:
-   ```bash
-   npm start
-   ```
-
-El backend quedará disponible en http://localhost:3000.
-
-## Estructura del proyecto
 - src/server.js: punto de entrada del servidor
-- src/routes/auth.js: registro y login
+- src/routes/auth.js: autenticación y registro
 - src/routes/products.js: CRUD de productos
+- src/routes/messages.js: obtención de mensajes guardados
 - src/middleware/auth.js: validación de JWT y control de roles
-- db/schema.sql: esquema de base de datos
+- frontend/src/App.jsx: interfaz del chat en React
+- db/schema.sql: esquema de la base de datos
+- docs/: ejemplos de uso y colección de pruebas
 
-## Endpoints principales
+## ✅ Requisitos previos
+
+- Node.js 18 o superior
+- PostgreSQL instalado y en ejecución
+- npm
+- Git para subir el proyecto a GitHub
+
+## ⚙️ Configuración del entorno
+
+### 1. Crear el archivo de variables de entorno
+
+En la raíz del proyecto crea un archivo .env a partir del ejemplo:
+
+```bash
+copy .env.example .env
+```
+
+Contenido esperado:
+
+```env
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=ecohome_db
+DB_USER=postgres
+DB_PASS=postgres
+JWT_SECRET=ecohome-super-secret-change-me
+```
+
+Para el frontend, crea también este archivo:
+
+```bash
+cd frontend
+copy .env.example .env
+```
+
+Contenido esperado:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+## 🗄️ Configuración de la base de datos
+
+1. Asegúrate de que PostgreSQL esté arrancado.
+2. Crea la base de datos que usarás, por ejemplo:
+
+```bash
+createdb ecohome_db
+```
+
+3. Inicializa las tablas del esquema:
+
+```bash
+npm run db:init
+```
+
+## ▶️ Ejecutar el proyecto localmente
+
+### Backend
+
+```bash
+npm install
+npm start
+```
+
+El backend quedará disponible en:
+
+- http://localhost:3000
+- http://localhost:3000/chat
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+La interfaz del chat quedará disponible en:
+
+- http://localhost:5173
+
+## 🔐 Autenticación y roles
+
+### Registro
+
+```http
+POST /auth/signup
+Content-Type: application/json
+```
+
+Ejemplo de cuerpo:
+
+```json
+{
+  "name": "Ana",
+  "username": "ana",
+  "email": "ana@ecohome.com",
+  "password": "123456",
+  "role": "client"
+}
+```
+
+### Login
+
+```http
+POST /auth/login
+Content-Type: application/json
+```
+
+```json
+{
+  "email": "ana@ecohome.com",
+  "password": "123456"
+}
+```
+
+El login devuelve un JWT que debe enviarse en el header:
+
+```http
+Authorization: Bearer <token>
+```
+
+## 🧾 Endpoints principales
+
 ### Autenticación
-- POST /auth/signup: crea un usuario nuevo
-- POST /auth/login: valida credenciales y devuelve un JWT
+- POST /auth/signup
+- POST /auth/login
 
 ### Productos
-- GET /products: devuelve todos los productos
-- GET /products/:id: devuelve un producto por id
-- POST /products: crea un producto (requiere token y rol admin)
-- PUT /products/:id: actualiza un producto (requiere token y rol admin)
-- PATCH /products/:id: actualiza parcialmente un producto (requiere token y rol admin)
-- DELETE /products/:id: elimina un producto (requiere token y rol admin)
+- GET /products
+- GET /products/:id
+- POST /products (solo admin)
+- PUT /products/:id (solo admin)
+- PATCH /products/:id (solo admin)
+- DELETE /products/:id (solo admin)
 
-## Validaciones y respuestas esperadas
-- name y price deben ser válidos para crear o actualizar productos.
-- price debe ser numérico y mayor que 0.
-- Códigos HTTP esperados:
-  - 200 OK
-  - 201 Created
-  - 400 Bad Request
-  - 401 Unauthorized
-  - 403 Forbidden
-  - 404 Not Found
+### Mensajes
+- GET /messages
 
-## Pruebas con Insomnia / Postman
-1. Importa la colección de pruebas desde docs/EcoHome API.postman_collection.json.
-2. Asegúrate de que el servidor esté corriendo en http://localhost:3000.
-3. Ejecuta primero signup, luego login.
-4. Usa el token devuelto por login en el header Authorization como:
-   ```http
-   Authorization: Bearer <token>
-   ```
-5. Prueba luego las operaciones CRUD de productos, incluyendo el caso sin token para comprobar que el middleware bloquea el acceso.
+## 🧪 Cómo probar cada funcionalidad
 
-## Ejemplo de uso con cURL
-Revisa el archivo docs/api-examples.sh para un flujo completo de signup, login, CRUD y errores.
+### 1. Registro y login
+
+Prueba el flujo completo de registro e inicio de sesión desde la API o desde el frontend.
+
+### 2. Gestión de productos
+
+Usa el endpoint de productos para crear, actualizar, listar y eliminar productos. Solo los usuarios con rol admin pueden modificar datos.
+
+### 3. Chat en tiempo real
+
+Abre la ruta /chat en el navegador o usa la interfaz React para enviar mensajes en tiempo real.
+
+### 4. Persistencia de mensajes
+
+Los mensajes enviados desde el chat se almacenan en PostgreSQL y pueden consultarse desde /messages.
+
+## 📸 Capturas de referencia
+
+Aqui se han dejado espacio preparado para añadir imagenes reales del proyecto. Puedes reemplazar los archivos placeholder por capturas de pantalla reales cuando las tengas.
+
+### Login y autenticación
+![Login y autenticación](docs/screenshots/auth-login.svg)
+
+### Catálogo de productos
+![Catálogo de productos](docs/screenshots/products-list.svg)
+
+### CRUD de productos (modo admin)
+![CRUD de productos](docs/screenshots/admin-crud.svg)
+
+### Chat en tiempo real
+![Chat en tiempo real](docs/screenshots/realtime-chat.svg)
+
+## 🧰 Archivos de ejemplo y pruebas
+
+- docs/api-examples.sh: ejemplos de uso con cURL
+- docs/EcoHome-API-Collection.json: colección para Postman o Insomnia
+- docs/ROADMAP.md: plan de evolución del proyecto
+
+## 📌 Notas para GitHub
+
+- Este README está pensado para que el proyecto se vea ordenado y preparado para compartir.
+- Si quieres, puedes sustituir los SVG placeholder por capturas reales de pantalla para dejar el repositorio mucho más visual.
+- Mantén el archivo .env localmente fuera del control de versiones.
+
+## 🔮 Próximas mejoras
+
+- Añadir gestión de usuarios desde el panel admin
+- Mejorar la interfaz del frontend
+- Añadir filtros y categorías de productos
+- Implementar tests automáticos
