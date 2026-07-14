@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoHome Chat en tiempo real</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 700px; margin: 2rem auto; padding: 1rem; }
+      #messages { border: 1px solid #ccc; padding: 1rem; min-height: 220px; margin-bottom: 1rem; }
+      input, button { padding: 0.6rem; margin-top: 0.5rem; }
+      button { cursor: pointer; }
+      .panel { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+      .status { margin-top: 0.5rem; font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <h1>EcoHome Chat</h1>
+    <p>Inicia sesión para conectar al chat seguro y ver los mensajes persistidos en PostgreSQL.</p>
+
+    <div class="panel">
+      <input id="emailInput" placeholder="Email" />
+      <input id="passwordInput" type="password" placeholder="Contraseña" />
+      <button onclick="login()">Entrar</button>
+    </div>
+
+    <div class="status" id="status">Sin sesión</div>
+    <div id="messages"></div>
+    <input id="messageInput" placeholder="Escribe un mensaje" />
+    <button onclick="sendMessage()">Enviar</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let socket = null;
+      const messages = document.getElementById('messages');
+      const input = document.getElementById('messageInput');
+      const emailInput = document.getElementById('emailInput');
+      const passwordInput = document.getElementById('passwordInput');
+      const status = document.getElementById('status');
+
+      async function login() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!email || !password) {
+          status.textContent = 'Introduce email y contraseña';
+          return;
+        }
+
+        const response = await fetch('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          status.textContent = data.error || 'Error al iniciar sesión';
+          return;
+        }
+
+        localStorage.setItem('token', data.token);
+        status.textContent = `Conectando como ${data.user?.name || data.user?.email}`;
+        connectSocket(data.token);
+      }
+
+      function connectSocket(token) {
+        if (socket) {
+          socket.disconnect();
+        }
+
+        socket = io({ auth: { token }, transports: ['websocket'] });
+
+        socket.on('connect', () => {
+          status.textContent = 'Conectado al chat seguro';
+          loadMessages();
+        });
+
+        socket.on('connect_error', (error) => {
+          status.textContent = 'Error de autenticación: ' + error.message;
+        });
+
+        socket.on('message-received', (msg) => {
+          appendMessage(msg);
+        });
+
+        socket.on('message-error', (payload) => {
+          status.textContent = payload?.error || 'No se pudo guardar el mensaje';
+        });
+      }
+
+      async function loadMessages() {
+        try {
+          const response = await fetch('/messages');
+          const data = await response.json();
+          renderMessages(data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      function renderMessages(list) {
+        messages.innerHTML = '';
+        if (!list || list.length === 0) {
+          appendMessage({ text: 'Aún no hay mensajes guardados.' });
+          return;
+        }
+
+        list.forEach((msg) => appendMessage(msg));
+      }
+
+      function sendMessage() {
+        const text = input.value.trim();
+        if (!text || !socket || !socket.connected) {
+          status.textContent = 'Primero inicia sesión y conecta el socket';
+          return;
+        }
+
+        socket.emit('new-message', { text });
+        input.value = '';
+      }
+
+      function appendMessage(msg) {
+        const item = document.createElement('div');
+        const label = msg.username ? `${msg.username}` : 'Sistema';
+        const text = msg.text || msg.message || '';
+        item.textContent = `${label}: ${text}`;
+        messages.appendChild(item);
+      }
+
+      const savedToken = localStorage.getItem('token');
+      if (savedToken) {
+        connectSocket(savedToken);
+      }
+    </script>
+  </body>
+</html>

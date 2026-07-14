@@ -1,0 +1,191 @@
+{
+  "info": {
+    "name": "EcoHome Store API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Signup",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Usuario Prueba\",\n  \"username\": \"usuarioprueba\",\n  \"email\": \"prueba@ecohome.com\",\n  \"password\": \"123456\",\n  \"role\": \"client\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/auth/signup",
+          "host": ["http://localhost:3000"],
+          "path": ["auth", "signup"]
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"prueba@ecohome.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/auth/login",
+          "host": ["http://localhost:3000"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Products - List all",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "host": ["http://localhost:3000"],
+          "path": ["products"]
+        }
+      }
+    },
+    {
+      "name": "Products - Get by id",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:3000/products/1",
+          "host": ["http://localhost:3000"],
+          "path": ["products", "1"]
+        }
+      }
+    },
+    {
+      "name": "Products - Create protected",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Producto protegido\",\n  \"price\": 12.5\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "host": ["http://localhost:3000"],
+          "path": ["products"]
+        }
+      }
+    },
+    {
+      "name": "Products - Create without token",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Intento sin token\",\n  \"price\": 8\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "host": ["http://localhost:3000"],
+          "path": ["products"]
+        }
+      }
+    },
+    {
+      "name": "Products - Update protected",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Producto actualizado\",\n  \"price\": 15.99\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/products/1",
+          "host": ["http://localhost:3000"],
+          "path": ["products", "1"]
+        }
+      }
+    },
+    {
+      "name": "Products - Patch protected",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"price\": 18\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/products/1",
+          "host": ["http://localhost:3000"],
+          "path": ["products", "1"]
+        }
+      }
+    },
+    {
+      "name": "Products - Delete protected",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/products/1",
+          "host": ["http://localhost:3000"],
+          "path": ["products", "1"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
