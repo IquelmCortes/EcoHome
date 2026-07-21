@@ -181,3 +181,41 @@ flutter run
 - Filtros por categoría y búsqueda de productos.
 - Notificaciones push en la aplicación móvil.
 - Paginación del historial de mensajes al deslizar hacia arriba.
+### Autenticación
+- POST /auth/signup
+- POST /auth/login
+
+### Productos
+- GET /products
+- GET /products/:id
+- POST /products (solo admin)
+- PUT /products/:id (solo admin)
+- PATCH /products/:id (solo admin)
+- DELETE /products/:id (solo admin)
+
+### Mensajes
+- GET /messages
+
+## 🧪 Cómo probar cada funcionalidad
+
+### 1. Registro y login
+
+Prueba el flujo completo de registro e inicio de sesión desde la API o desde el frontend.
+
+### 2. Gestión de productos
+
+Usa el endpoint de productos para crear, actualizar, listar y eliminar productos. Solo los usuarios con rol admin pueden modificar datos.
+
+### 3. Chat en tiempo real
+
+Abre la ruta /chat en el navegador o usa la interfaz React para enviar mensajes en tiempo real.
+
+### 4. Persistencia de mensajes
+
+Los mensajes enviados desde el chat se almacenan en PostgreSQL y pueden consultarse desde /messages.
+
+## 🧰 Archivos de ejemplo y pruebas
+
+- docs/api-examples.sh: ejemplos de uso con cURL
+- docs/EcoHome-API-Collection.json: colección para Postman o Insomnia
+- docs/ROADMAP.md: plan de evolución del proyecto
