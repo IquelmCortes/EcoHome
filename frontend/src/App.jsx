@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import './App.css';
 
-const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? '' : 'http://localhost:3000');
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:3000' : 'http://localhost:3000');
 
 function decodeUserFromToken(jwtToken) {
   try {
@@ -30,22 +30,62 @@ function App() {
   const [draft, setDraft] = useState('');
   const [status, setStatus] = useState('Listo para iniciar sesión');
   const [socket, setSocket] = useState(null);
+  const [productName, setProductName] = useState('');
+  const [productPrice, setProductPrice] = useState('');
+  const [view, setView] = useState('home');
+  const [products, setProducts] = useState([]);
+  const [stats, setStats] = useState({ productCount: 0 });
+  const [connected, setConnected] = useState(false);
 
-  const connected = useMemo(() => Boolean(socket?.connected), [socket]);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     if (!token) return;
 
+    async function loadProductsAndStats() {
+      try {
+        const [productsResponse, statsResponse] = await Promise.all([
+          fetch(`${API_URL}/products`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_URL}/auth/users/me/stats`, { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+
+        if (productsResponse.ok) {
+          const productsData = await productsResponse.json();
+          setProducts(productsData);
+        }
+
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadProductsAndStats();
+
     const client = io(API_URL, {
       auth: { token },
-      transports: ['websocket'],
+      transports: ['polling', 'websocket'],
     });
 
     client.on('connect', () => {
+      setConnected(true);
       setStatus('Conectado al chat');
     });
 
+    client.on('disconnect', () => {
+      setConnected(false);
+      setStatus('Desconectado del chat');
+    });
+
     client.on('connect_error', (error) => {
+      setConnected(false);
       setStatus(`Error de conexión: ${error.message}`);
     });
 
@@ -54,7 +94,12 @@ function App() {
     });
 
     client.on('message-received', (message) => {
-      setMessages((prev) => [...prev.slice(-9), message]);
+      setMessages((prev) => {
+        if (message?.id && prev.some((m) => String(m.id) === String(message.id))) {
+          return prev;
+        }
+        return [...prev.slice(-9), message];
+      });
     });
 
     client.on('message-error', (payload) => {
@@ -63,7 +108,9 @@ function App() {
 
     setSocket(client);
 
-    return () => client.disconnect();
+    return () => {
+      client.disconnect();
+    };
   }, [token]);
 
   async function handleLogin(event) {
@@ -85,6 +132,7 @@ function App() {
       localStorage.setItem('ecohome-token', data.token);
       setToken(data.token);
       setUser(data.user);
+      setStats(data.stats || { productCount: 0 });
       setStatus(`Bienvenido ${data.user?.name || data.user?.email}`);
     } catch (error) {
       setStatus(error.message);
@@ -102,6 +150,58 @@ function App() {
     setDraft('');
   }
 
+  async function refreshProductsAndStats() {
+    if (!token) return;
+
+    try {
+      const [productsResponse, statsResponse] = await Promise.all([
+        fetch(`${API_URL}/products`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/auth/users/me/stats`, { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+
+      if (productsResponse.ok) {
+        const productsData = await productsResponse.json();
+        setProducts(productsData);
+      }
+
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        setStats(statsData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleCreateProduct(event) {
+    event.preventDefault();
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${API_URL}/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name: productName, price: Number(productPrice) }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'No se pudo crear el producto');
+      }
+
+      setStatus(`Producto creado: ${data.name}`);
+      setProductName('');
+      setProductPrice('');
+      setView('home');
+      await refreshProductsAndStats();
+    } catch (error) {
+      setStatus(error.message);
+    }
+  }
+
   function handleLogout() {
     localStorage.removeItem('ecohome-token');
     setToken('');
@@ -116,7 +216,7 @@ function App() {
       <header className="app-header">
         <div>
           <p className="eyebrow">EcoHome</p>
-          <h1>Chat interno en tiempo real</h1>
+          <h1>Gestión y chat en tiempo real</h1>
         </div>
         <div className="status-pill">{connected ? 'Online' : 'Offline'}</div>
       </header>
@@ -132,42 +232,103 @@ function App() {
             Contraseña
             <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
           </label>
-          <button type="submit">Entrar al chat</button>
+          <button type="submit">Entrar</button>
         </form>
       ) : (
-        <div className="chat-layout">
-          <section className="card chat-panel">
-            <div className="chat-header">
-              <div>
-                <h2>Mensajes</h2>
-                <p>{status}</p>
-              </div>
+        <>
+          <div className="hero-card">
+            <div>
+              <h2>Bienvenido a EcoHome</h2>
+              <p>{status}</p>
+            </div>
+            <div className="hero-actions">
+              <button type="button" onClick={() => {
+                setView('home');
+                refreshProductsAndStats();
+              }}>Catálogo</button>
+              <button type="button" onClick={() => {
+                setView('create');
+              }}>Crear producto</button>
               <button type="button" onClick={handleLogout}>Salir</button>
             </div>
+          </div>
 
-            <div className="messages-list">
-              {messages.map((message) => (
-                <article key={message.id || `${message.username}-${message.created_at}`} className="message-item">
-                  <strong>{message.username || 'Sistema'}</strong>
-                  <p>{message.text}</p>
-                  <small>{new Date(message.created_at).toLocaleString()}</small>
-                </article>
-              ))}
+          <div className="card user-summary">
+            <div>
+              <h3>{user?.name || user?.email || 'Usuario'}</h3>
+              <p>{`${user?.name || user?.email || 'Usuario'} (${stats.productCount})`}</p>
             </div>
+            <span className="status-pill">{stats.productCount} productos</span>
+          </div>
 
-            <form className="composer" onSubmit={handleSend}>
-              <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Escribe un mensaje" />
-              <button type="submit">Enviar</button>
+          {view === 'create' ? (
+            <form className="card" onSubmit={handleCreateProduct}>
+              <h3>Crear producto</h3>
+              <label>
+                Nombre
+                <input value={productName} onChange={(event) => setProductName(event.target.value)} required />
+              </label>
+              <label>
+                Precio
+                <input type="number" value={productPrice} onChange={(event) => setProductPrice(event.target.value)} required />
+              </label>
+              <button type="submit">Guardar producto</button>
             </form>
-          </section>
+          ) : (
+            <div className="catalog-layout">
+              <section className="card catalog-panel">
+                <div className="panel-header">
+                  <div>
+                    <h2>Catálogo</h2>
+                    <p>Productos del backend con creador y estado actual.</p>
+                  </div>
+                  <span className="status-pill">{stats.productCount} productos</span>
+                </div>
 
-          <aside className="card sidebar">
-            <h2>Usuario activo</h2>
-            <p>{user?.name || user?.email || 'Sin usuario'}</p>
-            <p className="muted">Token guardado en localStorage</p>
-            <p className="muted">Últimos 10 mensajes cargados al conectar</p>
-          </aside>
-        </div>
+                <div className="product-list">
+                  {products.length === 0 ? (
+                    <p className="muted">No hay productos todavía</p>
+                  ) : (
+                    products.map((product) => (
+                      <article key={product.id} className="product-card">
+                        <div className="product-card__info">
+                          <strong>{product.name}</strong>
+                          <span>{product.creator_name || product.creator_username || 'Sin creador'}</span>
+                        </div>
+                        <div className="product-card__price">{Number(product.price).toFixed(2)} €</div>
+                      </article>
+                    ))
+                  )}
+                </div>
+              </section>
+
+              <section className="card chat-panel">
+                <div className="chat-header">
+                  <div>
+                    <h2>Mensajes</h2>
+                    <p>{status}</p>
+                  </div>
+                </div>
+
+                <div className="messages-list">
+                  {messages.map((message) => (
+                    <article key={message.id || `${message.username}-${message.created_at}`} className="message-item">
+                      <strong>{message.username || 'Sistema'}</strong>
+                      <p>{message.text}</p>
+                      <small>{new Date(message.created_at).toLocaleString()}</small>
+                    </article>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                <form className="composer" onSubmit={handleSend}>
+                  <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Escribe un mensaje" />
+                  <button type="submit">Enviar</button>
+                </form>
+              </section>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 const path = require('path');
 const http = require('http');
 const express = require('express');
+const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { Server } = require('socket.io');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
@@ -13,11 +14,14 @@ const messageRoutes = require('./routes/messages');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
+
+app.use(cors());
 const io = new Server(server, {
   cors: {
     origin: '*',
   },
 });
+app.set('io', io);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -105,7 +109,7 @@ io.on('connection', async (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-  console.log('Prueba de chat en http://localhost:3000/chat');
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
+  console.log(`Prueba de chat en http://localhost:${PORT}/chat`);
 });

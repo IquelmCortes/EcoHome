@@ -38,6 +38,7 @@ async function initDb() {
 
     const pool = require('../config/db');
     await pool.query(schema);
+    await pool.query(`ALTER TABLE products ADD COLUMN IF NOT EXISTS created_by BIGINT REFERENCES users(id) ON DELETE SET NULL`);
     console.log('Tablas creadas correctamente.');
   } catch (error) {
     console.error('Error al crear las tablas:', error.message);

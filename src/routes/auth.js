@@ -5,6 +5,36 @@ const pool = require('../config/db');
 
 const router = express.Router();
 
+async function getProfileData(userId) {
+  const userResult = await pool.query(
+    `SELECT id, name, username, email, role FROM users WHERE id = $1`,
+    [userId]
+  );
+
+  if (userResult.rows.length === 0) {
+    return null;
+  }
+
+  const user = userResult.rows[0];
+  const statsResult = await pool.query(
+    `SELECT COUNT(*)::int AS product_count FROM products WHERE created_by = $1`,
+    [userId]
+  );
+
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    },
+    stats: {
+      productCount: statsResult.rows[0]?.product_count ?? 0,
+    },
+  };
+}
+
 router.post('/signup', async (req, res) => {
   try {
     const { name, username, email, password, role = 'client' } = req.body;
@@ -51,6 +81,8 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
+    const profile = await getProfileData(user.id);
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -62,9 +94,37 @@ router.post('/login', async (req, res) => {
       { expiresIn: '2h' }
     );
 
-    res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    res.json({
+      token,
+      user: profile?.user || { id: user.id, name: user.name, email: user.email, role: user.role },
+      stats: profile?.stats || { productCount: 0 },
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error al iniciar sesión' });
+  }
+});
+
+router.get('/me', require('../middleware/auth').authJWT, async (req, res) => {
+  try {
+    const profile = await getProfileData(req.user.id);
+    if (!profile) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json(profile);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el perfil' });
+  }
+});
+
+router.get('/users/me/stats', require('../middleware/auth').authJWT, async (req, res) => {
+  try {
+    const profile = await getProfileData(req.user.id);
+    if (!profile) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json(profile.stats);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener estadísticas' });
   }
 });
 

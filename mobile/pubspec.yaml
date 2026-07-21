@@ -1,0 +1,19 @@
+name: ecohome_mobile
+description: Flutter app for EcoHome backend integration.
+distribution:
+  - name: ecohome_mobile
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  socket_io_client: ^2.0.0
+  shared_preferences: ^2.5.5
+
+flutter:
+  uses-material-design: true
