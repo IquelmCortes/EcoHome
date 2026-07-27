@@ -43,6 +43,7 @@ router.post('/', authJWT, async (req, res) => {
     const io = req.app.get('io');
     if (io) {
       io.emit('message-received', savedMessage);
+      io.emit('message', savedMessage);
     }
 
     res.status(201).json(savedMessage);

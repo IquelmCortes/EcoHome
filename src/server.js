@@ -10,6 +10,7 @@ const pool = require('./config/db');
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const messageRoutes = require('./routes/messages');
+const userRoutes = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ app.get('/chat', (req, res) => {
 });
 
 app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
 app.use('/products', productRoutes);
 app.use('/messages', messageRoutes);
 
@@ -98,6 +100,7 @@ io.on('connection', async (socket) => {
       const savedMessage = result.rows[0];
       console.log(`[socket] Mensaje guardado: ${savedMessage.text}`);
       io.emit('message-received', savedMessage);
+      io.emit('message', savedMessage);
     } catch (error) {
       console.error('[socket] Error al guardar el mensaje:', error.message);
       socket.emit('message-error', { error: 'No se pudo guardar el mensaje' });
