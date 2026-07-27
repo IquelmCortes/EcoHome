@@ -174,7 +174,7 @@ function App() {
     try {
       const [productsResponse, statsResponse] = await Promise.all([
         fetch(`${API_URL}/products`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_URL}/users/me/stats`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/auth/users/me/stats`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
 
       if (productsResponse.status === 401 || statsResponse.status === 401) {
