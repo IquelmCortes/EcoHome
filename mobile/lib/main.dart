@@ -8,7 +8,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 
 String getApiBaseUrl() {
   if (kIsWeb) {
-    return 'http://localhost:3000';
+    return 'https://ecohome-135v.onrender.com';
   }
 
   if (defaultTargetPlatform == TargetPlatform.android) {
