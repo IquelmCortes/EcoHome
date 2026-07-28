@@ -7,15 +7,8 @@ import 'dart:convert';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 String getApiBaseUrl() {
-  if (kIsWeb) {
-    return 'https://ecohome-135v.onrender.com';
-  }
-
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    return 'http://10.0.2.2:3000';
-  }
-
-  return 'http://localhost:3000';
+  // Apuntar al servidor backend desplegado en Render tanto para Android como para Web:
+  return 'https://ecohome-135v.onrender.com';
 }
 
 void main() {
